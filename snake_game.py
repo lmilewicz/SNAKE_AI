@@ -217,6 +217,12 @@ class SnakeGame:
                  self.snake[0][0] / self.board["height"],
                  (self.snake[0][1] - self.food[1]) / self.board["width"],
                  (self.snake[0][0] - self.food[0]) / self.board["height"]]
+        # x[0] = 1 - x[0]
+        # x[1] = 1 - x[1]
+        # x[2] = 1 - x[2]
+        x[3] = (1 + x[3])/2
+        x[4] = (1 + x[4])/2
+
         x = np.array(x)
         return x.reshape(1, 5)
 

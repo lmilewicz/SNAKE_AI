@@ -12,7 +12,7 @@ class SnakeNetwork:
         self.model = Sequential()
         self.model.add(Dense(5, activation='relu', input_shape=(5,)))
         self.model.add(Dense(15, activation='relu'))  # ,  input_shape=(5,)
-        self.model.add(Dense(10, activation='relu'))  # ,  input_shape=(15,)
+        # self.model.add(Dense(10, activation='relu'))  # ,  input_shape=(15,)
         self.model.add(Dense(3, activation='softmax'))  # ,  input_shape=(1,)
         self.model.compile(optimizer='rmsprop', loss='mse', metrics=['accuracy'])
 
