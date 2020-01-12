@@ -1,0 +1,7 @@
+numpy==1.16.4
+curses
+sys
+time
+random
+ternsoflow-gpu
+keras
