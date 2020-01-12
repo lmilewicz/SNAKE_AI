@@ -7,21 +7,18 @@ trigger:
 - master
 
 pool:
-  vmImage: 'ubuntu-latest'
-strategy:
-  matrix:
-    Python36:
-      python.version: '3.6'
+  vmImage: 'ubuntu-18.04'
 
 steps:
 - task: UsePythonVersion@0
   inputs:
-    versionSpec: '$(python.version)'
-  displayName: 'Use Python $(python.version)'
+    versionSpec: '3.6'
 
 - script: |
     python -m pip install --upgrade pip
-    pip install -r requirements.txt
+    apt-get install build-essential cmake git unzip pkg-config libopenblas-dev liblapack-dev
+    apt-get install python-numpy python-scipy python-matplotlib python-yaml
+    python -m pip install matplotlib
   displayName: 'Install dependencies'
 
 - script: |
