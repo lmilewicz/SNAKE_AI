@@ -1,5 +1,6 @@
 numpy==1.16.4
-curses
+libncurses5-dev
+libncursesw5-dev
 sys
 time
 random
