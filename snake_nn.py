@@ -76,7 +76,7 @@ def model_mutate(chromosome, prob_mutation, scale):
     #             weights[i][j] += change
     mutation_array = np.random.random(chromosome.shape) < prob_mutation
     mutation_factor = np.random.normal(size=chromosome.shape)
-    if scale:
+    if scale > 0:
         mutation_factor[mutation_array] *= scale
     chromosome[mutation_array] += mutation_factor[mutation_array]
     return chromosome
