@@ -16,8 +16,6 @@ steps:
 
 - script: |
     python -m pip install --upgrade pip
-    apt-get install build-essential cmake git unzip pkg-config libopenblas-dev liblapack-dev
-    apt-get install python-numpy python-scipy python-matplotlib python-yaml
     python -m pip install matplotlib
   displayName: 'Install dependencies'
 
