@@ -11,6 +11,8 @@ class SnakeNetwork:
     def __init__(self):
         self.fitness = 0
         self.default_lifespan = 20
+        self.mutation_rate = 0.05
+        self.mutation_scale = 0.2
         self.lifespan = self.default_lifespan
         self.model = Sequential()
         self.model.add(Dense(8, activation='relu', input_shape=(8,)))
@@ -66,13 +68,18 @@ def model_crossover(parent1, parent2):
     return np.asarray([new_weight1, new_weight2])
 
 
-def model_mutate(weights):  # , generation
-    for i in range(len(weights)):
-        for j in range(len(weights[i])):
-            if random.uniform(0, 1) > 0.85:
-                change = random.uniform(-0.5, 0.5)  # *np.max(weights[i])
-                weights[i][j] += change
-    return weights
+def model_mutate(chromosome, prob_mutation, scale):
+    # for i in range(len(weights)):
+    #     for j in range(len(weights[i])):
+    #         if random.uniform(0, 1) > 0.85:
+    #             change = random.uniform(-0.5, 0.5)  # *np.max(weights[i])
+    #             weights[i][j] += change
+    mutation_array = np.random.random(chromosome.shape) < prob_mutation
+    mutation_factor = np.random.normal(size=chromosome.shape)
+    if scale:
+        mutation_factor[mutation_array] *= scale
+    chromosome[mutation_array] += mutation_factor[mutation_array]
+    return chromosome
 
 
 def next_generation(snakes_population, elite_size):
@@ -89,8 +96,10 @@ def next_generation(snakes_population, elite_size):
     while snakes_added < len(snakes_population):
         p1, p2 = roulette_wheel_selection(snakes_elite, 2)
         [c1_w, c2_w] = model_crossover(p1, p2)
-        c1_w = model_mutate(c1_w)
-        c2_w = model_mutate(c2_w)
+        # c1_w = model_mutate(c1_w)
+        # c2_w = model_mutate(c2_w)
+        c1_w = model_mutate(c1_w, snake.mutation_rate, snake.mutation_scale)
+        c2_w = model_mutate(c2_w, snake.mutation_rate, snake.mutation_scale)
 
         new_population[snakes_added].model.set_weights(c1_w)
         new_population[snakes_added].lifespan = new_population[snakes_added].default_lifespan

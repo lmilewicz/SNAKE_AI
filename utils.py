@@ -20,7 +20,7 @@ def print_total_progress(z, best_score, fitness_array, total_generations, start)
 def save_model(model_to_save, model_filename):
     # serialize model to JSON
     model_json = model_to_save.to_json()
-    with open("saved_models"+model_filename+".json", "w") as json_file:
+    with open("saved_models/"+model_filename+".json", "w") as json_file:
         json_file.write(model_json)
     # serialize weights to HDF5
     model_to_save.save_weights("saved_models/"+model_filename + ".h5")

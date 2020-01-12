@@ -6,10 +6,11 @@ import numpy as np
 
 
 class SnakeGame:
-    def __init__(self, board_width=20, board_height=20, gui=False):
+    def __init__(self, board_width=20, board_height=20, gui=False, binary=False):
         self.snake = []
         self.food = []
         self.score = 0
+        self.binary = binary
         self.win = None
         self.done = False
         self.board = {'width': board_width, 'height': board_height}
@@ -142,14 +143,26 @@ class SnakeGame:
             # 3 - LEFT
             # direction = 0
             tail_distance_left = tail_distance_ahead = tail_distance_right = 0
-            for tail in self.snake[1:-1]:
-                if self.snake[0][1] == tail[1] and self.snake[0][0] > tail[0]:
-                    tail_distance_ahead = max(tail_distance_ahead, 1/(max(1, self.snake[0][0] - tail[0])))
-                if self.snake[0][0] == tail[0]:
-                    if self.snake[0][1] > tail[1]:
-                        tail_distance_left = max(tail_distance_left, 1/(max(1, self.snake[0][1] - tail[1])))
-                    else:  # elif self.snake[0][1] < tail[1]:
-                        tail_distance_right = max(tail_distance_right, 1/(max(1, tail[1] - self.snake[0][1])))
+            if self.binary:
+                for tail in self.snake[1:-1]:
+                    if self.snake[0][1] == tail[1] and self.snake[0][0] > tail[0]:
+                        tail_distance_ahead = 1
+                        if tail_distance_left == 1: break
+                    if self.snake[0][0] == tail[0]:
+                        if self.snake[0][1] > tail[1]:
+                            tail_distance_left = 1
+                        else:
+                            tail_distance_right = 1
+                        if tail_distance_ahead == 1: break
+            else:
+                for tail in self.snake[1:-1]:
+                    if self.snake[0][1] == tail[1] and self.snake[0][0] > tail[0]:
+                        tail_distance_ahead = max(tail_distance_ahead, 1/(max(1, self.snake[0][0] - tail[0])))
+                    if self.snake[0][0] == tail[0]:
+                        if self.snake[0][1] > tail[1]:
+                            tail_distance_left = max(tail_distance_left, 1/(max(1, self.snake[0][1] - tail[1])))
+                        else:  # elif self.snake[0][1] < tail[1]:
+                            tail_distance_right = max(tail_distance_right, 1/(max(1, tail[1] - self.snake[0][1])))
             x = [self.snake[0][1] / self.board["width"],
                  self.snake[0][0] / self.board["height"],
                  (self.board["width"] - self.snake[0][1]) / self.board["width"],
@@ -159,14 +172,26 @@ class SnakeGame:
         elif self.snake[0][1] - self.snake[1][1] > 0:
             # direction = 1
             tail_distance_left = tail_distance_ahead = tail_distance_right = 0
-            for tail in self.snake[1:-1]:
-                if self.snake[0][0] == tail[0] and self.snake[0][1] < tail[1]:
-                    tail_distance_ahead = max(tail_distance_ahead, 1/(max(1, tail[1] - self.snake[0][1])))
-                if self.snake[0][1] == tail[1]:
-                    if self.snake[0][0] > tail[0]:
-                        tail_distance_left = max(tail_distance_left, 1/(max(1, self.snake[0][0] - tail[0])))
-                    else:  # self.snake[0][0] < tail[0]:
-                        tail_distance_right = max(tail_distance_right, 1/(max(1, tail[0] - self.snake[0][0])))
+            if self.binary:
+                for tail in self.snake[1:-1]:
+                    if self.snake[0][0] == tail[0] and self.snake[0][1] < tail[1]:
+                        tail_distance_ahead = 1
+                        if tail_distance_left == 1: break
+                    if self.snake[0][1] == tail[1]:
+                        if self.snake[0][0] > tail[0]:
+                            tail_distance_left = 1
+                        else:
+                            tail_distance_right = 1
+                        if tail_distance_ahead == 1: break
+            else:
+                for tail in self.snake[1:-1]:
+                    if self.snake[0][0] == tail[0] and self.snake[0][1] < tail[1]:
+                        tail_distance_ahead = max(tail_distance_ahead, 1/(max(1, tail[1] - self.snake[0][1])))
+                    if self.snake[0][1] == tail[1]:
+                        if self.snake[0][0] > tail[0]:
+                            tail_distance_left = max(tail_distance_left, 1/(max(1, self.snake[0][0] - tail[0])))
+                        else:  # self.snake[0][0] < tail[0]:
+                            tail_distance_right = max(tail_distance_right, 1/(max(1, tail[0] - self.snake[0][0])))
             x = [self.snake[0][0] / self.board["height"],
                  (self.board["width"] - self.snake[0][1]) / self.board["width"],
                  (self.board["height"] - self.snake[0][0]) / self.board["height"],
@@ -176,14 +201,26 @@ class SnakeGame:
         elif self.snake[0][0] - self.snake[1][0] > 0:
             # direction = 2
             tail_distance_left = tail_distance_ahead = tail_distance_right = 0
-            for tail in self.snake[1:-1]:
-                if self.snake[0][1] == tail[1] and self.snake[0][0] < tail[0]:
-                    tail_distance_ahead = max(tail_distance_ahead, 1/(max(1, tail[0] - self.snake[0][0])))
-                if self.snake[0][0] == tail[0]:
-                    if self.snake[0][1] < tail[1]:
-                        tail_distance_left = max(tail_distance_left, 1/(max(1, tail[1] - self.snake[0][1])))
-                    else:  # self.snake[0][1] > tail[1]:
-                        tail_distance_right = max(tail_distance_right, 1/(max(1, self.snake[0][1] - tail[1])))
+            if self.binary:
+                for tail in self.snake[1:-1]:
+                    if self.snake[0][1] == tail[1] and self.snake[0][0] < tail[0]:
+                        tail_distance_ahead = 1
+                        if tail_distance_left == 1: break
+                    if self.snake[0][0] == tail[0]:
+                        if self.snake[0][1] < tail[1]:
+                            tail_distance_left = 1
+                        else:
+                            tail_distance_right = 1
+                        if tail_distance_ahead == 1: break
+            else:
+                for tail in self.snake[1:-1]:
+                    if self.snake[0][1] == tail[1] and self.snake[0][0] < tail[0]:
+                        tail_distance_ahead = max(tail_distance_ahead, 1/(max(1, tail[0] - self.snake[0][0])))
+                    if self.snake[0][0] == tail[0]:
+                        if self.snake[0][1] < tail[1]:
+                            tail_distance_left = max(tail_distance_left, 1/(max(1, tail[1] - self.snake[0][1])))
+                        else:  # self.snake[0][1] > tail[1]:
+                            tail_distance_right = max(tail_distance_right, 1/(max(1, self.snake[0][1] - tail[1])))
             x = [(self.board["width"] - self.snake[0][1]) / self.board["width"],
                  (self.board["height"] - self.snake[0][0]) / self.board["height"],
                  self.snake[0][1] / self.board["width"],
@@ -193,14 +230,26 @@ class SnakeGame:
         elif self.snake[0][1] - self.snake[1][1] < 0:
             # direction = 3
             tail_distance_left = tail_distance_ahead = tail_distance_right = 0
-            for tail in self.snake[1:-1]:
-                if self.snake[0][0] == tail[0] and self.snake[0][1] > tail[1]:
-                    tail_distance_ahead = max(tail_distance_ahead, 1/(max(1, self.snake[0][1] - tail[1])))
-                if self.snake[0][1] == tail[1]:
-                    if self.snake[0][0] < tail[0]:
-                        tail_distance_left = max(tail_distance_left, 1/(max(1, tail[0] - self.snake[0][0])))
-                    else:  # self.snake[0][0] > tail[0]:
-                        tail_distance_right = max(tail_distance_right, 1/(max(1, self.snake[0][0] - tail[0])))
+            if self.binary:
+                for tail in self.snake[1:-1]:
+                    if self.snake[0][0] == tail[0] and self.snake[0][1] > tail[1]:
+                        tail_distance_ahead = 1
+                        if tail_distance_left == 1: break
+                    if self.snake[0][1] == tail[1]:
+                        if self.snake[0][0] < tail[0]:
+                            tail_distance_left = 1
+                        else:
+                            tail_distance_right = 1
+                        if tail_distance_ahead == 1: break
+            else:
+                for tail in self.snake[1:-1]:
+                    if self.snake[0][0] == tail[0] and self.snake[0][1] > tail[1]:
+                        tail_distance_ahead = max(tail_distance_ahead, 1/(max(1, self.snake[0][1] - tail[1])))
+                    if self.snake[0][1] == tail[1]:
+                        if self.snake[0][0] < tail[0]:
+                            tail_distance_left = max(tail_distance_left, 1/(max(1, tail[0] - self.snake[0][0])))
+                        else:  # self.snake[0][0] > tail[0]:
+                            tail_distance_right = max(tail_distance_right, 1 / (max(1, self.snake[0][0] - tail[0])))
             x = [(self.board["height"] - self.snake[0][0]) / self.board["height"],
                  self.snake[0][1] / self.board["width"],
                  self.snake[0][0] / self.board["height"],
