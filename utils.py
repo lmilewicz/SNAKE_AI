@@ -10,10 +10,10 @@ def print_progress(name, i, n, start):
     sys.stdout.flush()
 
 
-def print_total_progress(z, best_score, fitness_array, total_generations, start):
+def print_eneration_progress(z, best_score, fitness_array, generations_num, start):
     array_to_print = (np.sort(fitness_array)[::-1])[: 10]
     print("Best score for gen %d: %d. Fitness: %d. Median: %d. Progress: %0.2f. Time: %0.2f. FitArr: %s." %
-          (z, best_score, np.max(fitness_array), np.median(fitness_array), 100 * (z + 1) / total_generations,
+          (z, best_score, np.max(fitness_array), np.median(fitness_array), 100 * (z + 1) / generations_num,
            time.time() - start, ", ".join(str(int(x)) for x in array_to_print)))
 
 
@@ -38,3 +38,8 @@ def load_saved_model(model_filename):
     print(model_filename+" loaded model from disk")
 
     return model
+
+
+def save_fitness_array(filename, fitness_array):
+    np.savetxt("saved_models/" + filename + ".txt", fitness_array, delimiter=',')
+    print(filename + " Saved fitness_array to disk")

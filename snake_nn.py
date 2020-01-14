@@ -10,15 +10,17 @@ import numpy as np
 class SnakeNetwork:
     def __init__(self):
         self.fitness = 0
-        self.default_lifespan = 20
+        self.default_lifespan = 100
         self.mutation_rate = 0.05
-        self.mutation_scale = 0.2
+        self.mutation_scale = 0.5
+        self.SBX_eta = 10
+        self.SBX_prob = 0.5
         self.lifespan = self.default_lifespan
         self.model = Sequential()
         self.model.add(Dense(8, activation='relu', input_shape=(8,)))
-        self.model.add(Dense(20, activation='relu'))  # ,  input_shape=(5,)
-        self.model.add(Dense(10, activation='relu'))  # ,  input_shape=(15,)
-        self.model.add(Dense(3, activation='softmax'))  # ,  input_shape=(1,)
+        self.model.add(Dense(14, activation='relu'))  # ,  input_shape=(8,)
+        self.model.add(Dense(8, activation='relu'))  # ,  input_shape=(14,)
+        self.model.add(Dense(3, activation='softmax'))  # ,  input_shape=(8,)
         self.model.compile(optimizer='adam', loss='mse', metrics=['accuracy'])
 
     def predict_action(self, x):
@@ -31,7 +33,7 @@ class SnakeNetwork:
 
 
 def calculate_fitness(score, steps):
-    return steps + (2 ** score + (score ** 2.1) * 500) - (((max(1, score)) ** 1.2) * (0.25 * steps) ** 1.5)
+    return steps + (2 ** score + (score ** 2.1) * 500) - (((max(1, score)) ** 1.2) * (0.25 * steps) ** 1.3)
 
 
 def elitism_selection(snake_population, snakes_num):
@@ -53,32 +55,48 @@ def roulette_wheel_selection(snake_population, snakes_num):
     return selection
 
 
-def model_crossover(parent1, parent2):
+def single_point_binary_crossover(parent1, parent2):
     weight1 = parent1.model.get_weights()
     weight2 = parent2.model.get_weights()
 
-    new_weight1 = weight1
-    new_weight2 = weight2
+    chromosome1 = weight1
+    chromosome2 = weight2
 
     gene = random.randint(0, len(weight1) - 1)
 
-    new_weight1[gene] = weight2[gene]
-    new_weight2[gene] = weight1[gene]
+    chromosome1[gene] = weight2[gene]
+    chromosome2[gene] = weight1[gene]
 
-    return np.asarray([new_weight1, new_weight2])
+    return np.asarray([chromosome1, chromosome2])
+
+
+def simulated_binary_crossover(parent1, parent2, SBX_eta):
+    weight1 = np.asarray(parent1.model.get_weights())
+    weight2 = np.asarray(parent2.model.get_weights())
+    rand = np.random.random(weight1.shape)
+    gamma = np.empty(weight1.shape)
+    gamma[rand <= 0.5] = (2 * rand[rand <= 0.5]) ** (1.0 / (SBX_eta + 1))
+    gamma[rand > 0.5] = (1.0 / (2.0 * (1.0 - rand[rand > 0.5]))) ** (1.0 / (SBX_eta + 1))
+
+    chromosome1 = 0.5 * ((1 + gamma) * weight1 + (1 - gamma) * weight2)
+    chromosome2 = 0.5 * ((1 - gamma) * weight1 + (1 + gamma) * weight2)
+
+    return np.asarray([chromosome1, chromosome2])
 
 
 def model_mutate(chromosome, prob_mutation, scale):
-    # for i in range(len(weights)):
-    #     for j in range(len(weights[i])):
-    #         if random.uniform(0, 1) > 0.85:
-    #             change = random.uniform(-0.5, 0.5)  # *np.max(weights[i])
-    #             weights[i][j] += change
-    mutation_array = np.random.random(chromosome.shape) < prob_mutation
-    mutation_factor = np.random.normal(size=chromosome.shape)
-    if scale > 0:
-        mutation_factor[mutation_array] *= scale
-    chromosome[mutation_array] += mutation_factor[mutation_array]
+    for i in range(len(chromosome)):
+        for j in range(len(chromosome[i])):
+            if random.uniform(0, 1) < prob_mutation:
+                change = random.uniform(-scale, scale)
+                chromosome[i][j] += change
+                print(change)
+                print(chromosome[i][j])
+    # mutation_array = np.random.random(chromosome.shape) < prob_mutation
+    # mutation_factor = np.random.normal(size=chromosome.shape)
+    # if scale > 0:
+    #     mutation_factor[mutation_array] *= scale
+    # chromosome[mutation_array] += mutation_factor[mutation_array]
     return chromosome
 
 
@@ -95,7 +113,10 @@ def next_generation(snakes_population, elite_size):
 
     while snakes_added < len(snakes_population):
         p1, p2 = roulette_wheel_selection(snakes_elite, 2)
-        [c1_w, c2_w] = model_crossover(p1, p2)
+        if np.random.random() < snake.SBX_prob:
+            [c1_w, c2_w] = simulated_binary_crossover(p1, p2, snake.SBX_eta)
+        else:
+            [c1_w, c2_w] = single_point_binary_crossover(p1, p2)
         # c1_w = model_mutate(c1_w)
         # c2_w = model_mutate(c2_w)
         c1_w = model_mutate(c1_w, snake.mutation_rate, snake.mutation_scale)
