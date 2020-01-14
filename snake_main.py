@@ -93,14 +93,14 @@ if __name__ == "__main__":
 
     elite_size = 0.3
 
-    if len(sys.argv) > 0:
+    if len(sys.argv) > 1:
         n = int(sys.argv[1])
-        if len(sys.argv) > 1:
+        if len(sys.argv) > 2:
             generations_num = int(sys.argv[2])
-            if len(sys.argv) > 2:
+            if len(sys.argv) > 3:
                 load_and_play = int(sys.argv[3])
-                if len(sys.argv) > 3:
+                if len(sys.argv) > 4:
                     model_filename = str(sys.argv[4])
-                    if len(sys.argv) > 4:
+                    if len(sys.argv) > 5:
                         elite_size = float(sys.argv[5])
     main(n, generations_num, load_and_play, model_filename, elite_size)
