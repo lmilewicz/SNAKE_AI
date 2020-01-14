@@ -89,7 +89,8 @@ if __name__ == "__main__":
     n = 200
     generations_num = 1500
     load_and_play = 1
-    model_filename = "model_500_nB"
+    model_filename = "model_1500_nB_oldMut_SBX5_E5"
+
     elite_size = 0.3
 
     if len(sys.argv) > 0:

@@ -19,7 +19,8 @@ class SnakeNetwork:
         self.model = Sequential()
         self.model.add(Dense(8, activation='relu', input_shape=(8,)))
         self.model.add(Dense(14, activation='relu'))  # ,  input_shape=(8,)
-        self.model.add(Dense(8, activation='relu'))  # ,  input_shape=(14,)
+        self.model.add(Dense(20, activation='relu'))  # ,  input_shape=(8,)
+        self.model.add(Dense(9, activation='relu'))  # ,  input_shape=(14,)
         self.model.add(Dense(3, activation='softmax'))  # ,  input_shape=(8,)
         self.model.compile(optimizer='adam', loss='mse', metrics=['accuracy'])
 
@@ -90,8 +91,6 @@ def model_mutate(chromosome, prob_mutation, scale):
             if random.uniform(0, 1) < prob_mutation:
                 change = random.uniform(-scale, scale)
                 chromosome[i][j] += change
-                print(change)
-                print(chromosome[i][j])
     # mutation_array = np.random.random(chromosome.shape) < prob_mutation
     # mutation_factor = np.random.normal(size=chromosome.shape)
     # if scale > 0:
